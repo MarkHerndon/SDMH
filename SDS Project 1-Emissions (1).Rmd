@@ -1,0 +1,181 @@
+---
+title: "SDS Project 1: Global Emissions"
+output: html_document
+author: "Mark Herndon"
+date: "2023-09-18"
+toc: true
+toc_float: true
+
+---
+
+# Question 1
+
+**Abstract**
+
+>Growing trends in global greenhouse gas emissions contribute heavily to the warming of the Earth. Comprised of the greenhouse gas emissions is Carbon Dioxide (CO2) which is emitted through the burning of fossil fuels, and Nitrous Oxide (N2O) which is primarily produced through agricultural production and land managment. As these Greenhouse gas emissions grow into the composition of our atmosphere, the Earth's Ozone layer deterioates leading to the warming of the planets climate. Compariatively, studies done on the compund Nitrous Oxide reveal that one pound of Nitrous Oxide warms the atmosphere around 300 times as much as Carbon dioxide over a 100 year life-span. Along with these studies, found that most Nitrous Oxide emissions amount from Land and Agricultural management.**
+
+>In this study we will be analyzing the total greenhouse gas emissions of Nitrous Oxide and Carbon Dioxide, and if those emissions correlate to a country's GDP and Population, as well as how the total emissions compare within global regions. To produce our findings, we will be using data from the *Our World in Data* organization, which gives us information on a country and their emissions for Carbon Dioxide and Nitrous Oxide, along with their population, GDP, and regions of the Americas, Eurpoe, Asia, and the Middle East.**
+
+
+
+![*Image 1.Photo of Emissions. The New York Times, https://www.nytimes.com/. Accessed 19 Sept. 2023.  *](/Users/markherndon/Downloads/merlin_194947233_fa6a1bb6-4afb-40c6-82d1-9839bc3d9791-articleLarge.webp)
+
+---
+
+
+```{r, echo=FALSE}
+
+emissions <- read.csv('Project1_emissions.csv')
+
+
+```
+
+
+
+>First, for reference on the make-up of the total emissions for these countries, we should look at how the data of Nitrous Oxide and Carbon Dioxide is proportioned:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+
+library(dplyr)
+
+library(kableExtra)
+
+emissions_by_region <- emissions %>%
+  group_by(Region) %>%
+  summarize(
+    Total_N2O_Emissions = sum(N2O_Produced),
+    Total_CO2_Emissions = sum(CO2_Produced)
+  ) %>%
+  ungroup()
+
+colnames(emissions_by_region) = c( "Region","Total N2O Emissions", "Total CO2 Emissions")
+
+
+TER_table <- kbl(emissions_by_region, caption = "Total Emissions of N2O compared to C2O On A Global Scale")
+
+kable_classic(TER_table,full_width=F)
+
+
+
+```
+
+
+
+
+>From this table, we can see how a large makeup of the total Greenhouse gas emissions is overwhelmingly CO2. Now lets see the distribution of our outcome varibale of the total emissions produced by countries. 
+
+
+# Question 2
+
+```{r, echo=FALSE, message=FALSE}
+
+
+emissions$total.emissions <- (emissions$CO2_Produced+emissions$N2O_Produced)
+
+
+library(ggplot2)
+
+TE_ggplot <- ggplot(emissions)
+
+TE_ggplot + geom_histogram(aes(x=total.emissions), color='black', fill='darkgreen', bins = 60) + labs(title='Frequency of Total Emissions by Country', x='Total CO2 and N2O Emissions (Kilotons)', Y='Frequency')
+
+fivenum(emissions$total.emissions)
+
+mean(emissions$total.emissions)
+
+sd(emissions$total.emissions)
+
+
+```
+
+>From the graph, we can see the majority of our data for total emissions lies around 0-750 Kilotons, with a median of 76.640 Kilotons, and a mean 399.7 Kilotons.The standard deviation for this data is 1297.2 due to few outliers spreading the range out.
+
+# Question 3
+
+>Now we can investigate predictor variables to see how they correlate with our outcome variable. First lets compare total emissions to Countries Population:
+
+
+```{r, echo=FALSE}
+
+
+
+library(ggplot2)
+
+TE_ggplot + geom_point(aes(x=total.emissions, y=Population), color='black',fill='orange',pch=21) + labs(title = 'Total Emissions Vs. Country Population', x='Total CO2 and NO2 emissions (Kilotons)', y='Population')
+
+cor(emissions$total.emissions,emissions$Population)
+
+fivenum(emissions$total.emissions,emissions$Population)
+
+
+```
+
+> From this plotted graph we can see a positive correlation between total emissions and Population. This is further back by a correlation coefficient of `r cor(emissions$total.emissions,emissions$Population) `, This positive relation and a correlation coefficient close to 1 suggests that there is a strong relationship between total emissions from countries and their populations.
+
+
+---
+
+>_-Now lets compare total emissions from countries compared to their GDP:
+
+
+```{r, echo=FALSE}
+
+
+library(ggplot2)
+
+
+TE_ggplot + geom_point(aes(x=total.emissions, y=GDP), color='black',fill='red',pch=21) + labs(title = 'Total Emissions by Country GDP', x='Total Emissions of CO2 and NO2 (Kilotons)', y='GDP')
+
+
+cor(emissions$total.emissions,emissions$GDP)
+
+fivenum(emissions$total.emissions,emissions$GDP)
+
+
+```
+
+> From this graph the positive relationship is indistiguishable, with a correlation coefficent even closer to 1 (`r cor(emissions$total.emissions,emissions$GDP)`). In this graph we also have a mean of 76.640 Kilotons of emissions.
+
+
+---
+
+>Now finally we'll compare global regions to total emissions and see how they compare against eachother.
+
+
+```{r, echo=FALSE}
+
+
+library(ggplot2)
+
+
+TE_ggplot + geom_boxplot(aes(x=Region, y=total.emissions), color='black',fill='pink',pch=21) + labs(title = 'Total Emissions by Regions', x='Region', y='Total Emissions of CO2 and NO2 (Kilotons)')
+
+
+
+```
+
+>From this boxplot, we can see that the quartile spread of data for each region roughly covers their range. We can see that Asia/Pacific has the highest median and range for Kilotons of total emissions, and next after is the Americas.The rest of the regions lie around the same margins.
+
+
+# Question 4
+
+**Conclusion**
+
+>From this study, we can definatively say that the total Greenhouse gas emissions produced across countries correlate strongly with that country's GDP, and Population. Fromn this we can conclude that countries with strong economies, who're more likely to be industralized and have more technology produce more Greenhosue gas emissions. Countries that have higher populations produce more emissions as they have more capita to do so. ALong with that, studying total Greenhouse gas emissions across Regions suggests that the Americas and Asia/Pacific produce the most greenhouse gases out of the four regions. Future reseach would suggest how to cut back on Greenhouse gas emmisions, and the potential rise in Nitrous Oxide emissions.
+
+
+Sources:
+
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5692531/
+
+https://www.epa.gov/ghgemissions/sources-greenhouse-gas-emissions
+
+https://ourworldindata.org/co2-and-greenhouse-gas-emissions
+
+
+
+
+
+
+
