@@ -1,5 +1,2 @@
 # SDMH
-Blah blah blah
-
-
-sdfwiufwifbe
+Class Project on global emissions
