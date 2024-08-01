@@ -1,2 +1,2 @@
 # SDMH
-Class Project on global emissions
+First year Class Project analyzing internationalglobal emissions 
